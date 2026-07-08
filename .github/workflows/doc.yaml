@@ -75,10 +75,16 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
       - name: Install docs dependencies
+        if: ${{ inputs.docs-requirements-file != '' }}
         shell: bash
+        env:
+          REQUIREMENTS_FILE: ${{ inputs.docs-requirements-file }}
         run: |
-          python -m pip install --upgrade pip
-          pip install -r "${{ inputs.docs-requirements-file }}"
+          if [[ -f "$REQUIREMENTS_FILE" ]]; then
+            pip install -r "$REQUIREMENTS_FILE"
+          else
+            echo "::warning::Requirements file '$REQUIREMENTS_FILE' was not found; skipping."
+          fi
       - name: Build docs
         shell: bash
         run: ${{ inputs.build-command }}
