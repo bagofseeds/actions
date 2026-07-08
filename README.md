@@ -1,5 +1,5 @@
 # bagofseeds/actions
 
-[![documentation](https://github.com/bagofseeds/actions/actions/workflows/docs-on-push.yaml/badge.svg)](https://bagofseeds.github.io/actions/)
+[![Documentation](https://img.shields.io/github/actions/workflow/status/bagofseeds/actions/docs-on-push.yaml?label=documentation)](https://bagofseeds.github.io/actions/)
 
 Reusable GitHub Actions workflows for testing, linting, docs, and publishing.
