@@ -7,7 +7,8 @@ nav = [
     "test-matrix.md",
     "lint.md",
     "coverage.md",
-    "doc.md",
+    "docs.md",
+    "docs-on-push.md",
   ]},
   {"Publishing" = [
     "publish-pypi.md",
@@ -45,3 +46,5 @@ toggle.name = "Switch to light mode"
 [project.theme.icon]
 logo = "simple/githubactions"
 repo = "fontawesome/brands/github"
+
+[project.markdown_extensions.pymdownx.snippets]
