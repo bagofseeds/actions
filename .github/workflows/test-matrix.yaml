@@ -9,8 +9,8 @@ on:
         description: Commit / Branch / Tag / SHA to checkout
         required: false
         default: ""
-      pip-dependencies:
-        description: Newline-separated pip dependencies to install before pytest
+      requirements-file:
+        description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
         required: false
         default: ""
       pytest-args:
@@ -28,8 +28,8 @@ on:
         required: false
         default: ""
         type: string
-      pip-dependencies:
-        description: Newline-separated pip dependencies to install before pytest
+      requirements-file:
+        description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
         required: false
         default: ""
         type: string
@@ -56,6 +56,6 @@ jobs:
     with:
       tag: ${{ inputs.tag }}
       python-version: ${{ matrix.python-version }}
-      pip-dependencies: ${{ inputs.pip-dependencies }}
+      requirements-file: ${{ inputs.requirements-file }}
       pytest-args: ${{ inputs.pytest-args }}
       working-directory: ${{ inputs.working-directory }}

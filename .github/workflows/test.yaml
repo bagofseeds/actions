@@ -13,8 +13,12 @@ on:
         description: Python version
         required: false
         default: "3.x"
+      requirements-file:
+        description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
+        required: false
+        default: ""
       pip-dependencies:
-        description: Newline-separated pip dependencies to install before pytest
+        description: Comma-separated pip dependencies to install (workflow_dispatch only)
         required: false
         default: ""
       pytest-args:
@@ -37,8 +41,8 @@ on:
         required: false
         default: "3.x"
         type: string
-      pip-dependencies:
-        description: Newline-separated pip dependencies to install before pytest
+      requirements-file:
+        description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
         required: false
         default: ""
         type: string
@@ -67,18 +71,29 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
-      - name: Install dependencies
+      - name: Install base dependencies
         shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install pytest
-          while IFS= read -r dependency; do
-            if [[ -n "$dependency" ]]; then
-              pip install "$dependency"
+      - name: Install project
+        shell: bash
+        run: pip install -e "${{ inputs.working-directory }}"
+      - name: Install from requirements file
+        if: ${{ inputs.requirements-file != '' }}
+        shell: bash
+        run: pip install -r "${{ inputs.requirements-file }}"
+      - name: Install dispatch extra dependencies
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.pip-dependencies != '' }}
+        shell: bash
+        run: |
+          IFS=',' read -r -a dependencies <<< "${{ inputs.pip-dependencies }}"
+          for dep in "${dependencies[@]}"; do
+            dep="$(echo "$dep" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+            if [[ -n "$dep" ]]; then
+              pip install "$dep"
             fi
-          done << 'EOF'
-          ${{ inputs.pip-dependencies }}
-          EOF
+          done
       - name: Test with pytest
         shell: bash
         working-directory: ${{ inputs.working-directory }}

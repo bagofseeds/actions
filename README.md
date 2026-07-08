@@ -1,23 +1,25 @@
 # bagofseeds/actions
 
-Reusable, **generic** GitHub Actions workflows that can be called from other repositories.
+Reusable GitHub Actions workflows adapted from [`neuroscales/abczarr`](https://github.com/neuroscales/abczarr).
 
-This repository adapts reusable workflows from [`neuroscales/abczarr`](https://github.com/neuroscales/abczarr) and keeps only workflows that are broadly reusable across projects.
+## Reusable workflows
 
-## Available reusable workflows
+### `/.github/workflows/test.yaml` (pytest)
 
-### 1) `test.yaml` — run pytest
+Runs pytest in a target repository.
 
-Path: `/.github/workflows/test.yaml`
+- **workflow_call** inputs:
+  - `requirements-file`: path to a requirements file (can be any name/path)
+  - `python-version`, `tag`, `pytest-args`, `working-directory`
+- **workflow_dispatch** extras:
+  - `pip-dependencies`: comma-separated list (`pkg1,pkg2,./localpkg`)
 
-Key inputs:
-- `python-version` (default: `3.x`)
-- `tag` (optional ref to checkout)
-- `pip-dependencies` (**newline-separated**, optional; supports any number of dependencies)
-- `pytest-args` (optional)
-- `working-directory` (default: `.`)
+Notes:
+- Installs `pytest`
+- Installs the current project (`pip install -e <working-directory>`)
+- Installs dependencies from `requirements-file` when provided
 
-Example:
+Example (`workflow_call`):
 
 ```yaml
 jobs:
@@ -25,85 +27,78 @@ jobs:
     uses: bagofseeds/actions/.github/workflows/test.yaml@main
     with:
       python-version: "3.12"
-      pip-dependencies: |
-        -e .
-        .[test]
-        numpy>=1.26
+      requirements-file: "requirements-test.txt"
       pytest-args: "-q"
 ```
 
-### 2) `test-matrix.yaml` — pytest on Python 3.8 + latest
+### `/.github/workflows/test-matrix.yaml` (pytest matrix)
 
-Path: `/.github/workflows/test-matrix.yaml`
+Runs `test.yaml` for Python `3.8` and latest (`3.x`).
 
-Runs the same test workflow on:
-- `3.8`
-- `3.x` (latest available stable Python on the runner)
-
-Example:
+Example (`workflow_call`):
 
 ```yaml
 jobs:
   tests:
     uses: bagofseeds/actions/.github/workflows/test-matrix.yaml@main
     with:
-      pip-dependencies: |
-        -e .
-        .[test]
+      requirements-file: "requirements-test.txt"
 ```
 
-### 3) `lint.yaml` — run project-defined lint command
+### `/.github/workflows/lint.yaml`
 
-Path: `/.github/workflows/lint.yaml`
+Generic lint runner with configurable command.
 
-You provide dependencies and the lint command, so this stays project-agnostic.
+- **workflow_call**: pass `requirements-file`
+- **workflow_dispatch**: optional `pip-dependencies` (comma-separated)
 
-Example:
+### `/.github/workflows/coverage.yaml`
+
+Runs `pytest --cov=...` and uploads `coverage.xml`.
+
+- **workflow_call**: pass `requirements-file`
+- **workflow_dispatch**: optional `pip-dependencies` (comma-separated)
+
+## Publish workflows (repository-specific)
+
+Added from the reference repo:
+
+- `/.github/workflows/publish-pypi.yaml`
+- `/.github/workflows/test-and-publish.yaml`
+- `/.github/workflows/publish-on-release.yaml`
+
+These can be called, but are usually **repo-specific** because they depend on:
+- package metadata/build layout
+- repository secrets/tokens
+- release policy
+
+To adapt in another repo:
+1. Create repository secrets for `PYPI_TOKEN` and `TEST_PYPI_TOKEN`.
+2. Ensure package build works with `python -m build`.
+3. Call `test-and-publish.yaml` from your repo and pass the right `requirements-file` for tests.
+4. Prefer pinning this repo by tag/SHA in `uses:`.
+
+## Zensical docs workflow
+
+Added:
+
+- `/.github/workflows/doc.yaml`
+
+This workflow builds docs (`zensical build --clean` by default) and deploys to GitHub Pages.
+
+Can it be called from another repo?
+- **Yes**, via `workflow_call`.
+- But the caller repository must have Pages enabled and allow `pages: write` + `id-token: write` permissions.
+- The caller must also provide a valid docs requirements file and build command/path if defaults do not match.
+
+Example (`workflow_call`):
 
 ```yaml
 jobs:
-  lint:
-    uses: bagofseeds/actions/.github/workflows/lint.yaml@main
+  docs:
+    uses: bagofseeds/actions/.github/workflows/doc.yaml@main
     with:
-      pip-dependencies: |
-        ruff
-        codespell
-      lint-command: "ruff check . && codespell ."
+      docs-requirements-file: "docs/requirements.txt"
+      build-command: "zensical build --clean"
+      site-path: "site"
 ```
-
-### 4) `coverage.yaml` — pytest coverage + upload artifact
-
-Path: `/.github/workflows/coverage.yaml`
-
-Runs `pytest --cov=...` and uploads `coverage.xml` as a workflow artifact.
-
-Example:
-
-```yaml
-jobs:
-  coverage:
-    uses: bagofseeds/actions/.github/workflows/coverage.yaml@main
-    with:
-      pip-dependencies: |
-        -e .
-        .[test]
-      coverage-target: "your_package"
-```
-
-## Workflows intentionally not adapted (and why)
-
-Some workflows in `abczarr` are intentionally project/repository constrained:
-
-- **PyPI publish workflows** (`publish-pypi.yaml`, `publish-on-release.yaml`, `test-and-publish.yaml`)
-  - Restriction: require repository-specific secrets, package metadata, and release policy.
-  - Workaround: keep publishing workflows in each target repository, and optionally call the reusable `test`/`coverage` workflows from this repo before publishing.
-
-- **Docs deploy workflow** (`doc.yaml`)
-  - Restriction: depends on project-specific documentation toolchain and site layout.
-  - Workaround: define a repository-level docs workflow that installs project docs dependencies and optionally reuses generic setup/testing workflows from this repo.
-
-## Notes
-
-- These are **reusable workflows** (`workflow_call`), invoked via:
-  `uses: bagofseeds/actions/.github/workflows/<workflow>.yaml@<ref>`
-- Pin to tags/SHAs in production for better supply-chain safety.
