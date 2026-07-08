@@ -1,6 +1,6 @@
 # `docs-on-push.yaml`
 
-Trigger docs deployment on push and delegate to `doc.yaml`.
+Trigger docs deployment on push and delegate to `docs.yaml`.
 
 ## Highlights
 

@@ -13,6 +13,6 @@ permissions:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/doc.yaml
+    uses: ./.github/workflows/docs.yaml
     with:
       tag: ${{ github.ref }}

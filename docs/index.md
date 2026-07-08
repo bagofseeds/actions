@@ -8,7 +8,7 @@ Reusable GitHub Actions workflows for testing, linting, docs, and publishing.
 - [`test-matrix.yaml`](test-matrix.md) — run pytest across Python versions
 - [`lint.yaml`](lint.md) — run a configurable lint command
 - [`coverage.yaml`](coverage.md) — run pytest with coverage
-- [`doc.yaml`](doc.md) — build and deploy docs
+- [`docs.yaml`](docs.md) — build and deploy docs
 - [`docs-on-push.yaml`](docs-on-push.md) — trigger docs deploys on push
 - [`publish-pypi.yaml`](publish-pypi.md) — publish to PyPI or TestPyPI
 - [`test-and-publish.yaml`](test-and-publish.md) — test first, then publish

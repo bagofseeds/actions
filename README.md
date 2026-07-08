@@ -119,7 +119,7 @@ jobs:
 
 ---
 
-### `doc.yaml` — Build and deploy docs
+### `docs.yaml` — Build and deploy docs
 
 Builds documentation (default: `zensical build --clean`) and deploys to
 GitHub Pages. Use `docs-on-push.yaml` for automatic push-triggered deploys.
@@ -153,7 +153,7 @@ caller must have GitHub Pages enabled and grant the permissions listed above.
 ```yaml
 jobs:
   docs:
-    uses: bagofseeds/actions/.github/workflows/doc.yaml@main
+    uses: bagofseeds/actions/.github/workflows/docs.yaml@main
     with:
       docs-requirements-file: "docs/requirements.txt"
       build-command: "zensical build --clean"
@@ -162,7 +162,7 @@ jobs:
 
 ### `docs-on-push.yaml` — Trigger docs deploys on push
 
-Wraps `doc.yaml` for `push` events on `main` and `master`.
+Wraps `docs.yaml` for `push` events on `main` and `master`.
 
 #### Example
 
