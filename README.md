@@ -1,7 +1,5 @@
 # bagofseeds/actions
 
-Reusable GitHub Actions workflows adapted from [`neuroscales/abczarr`](https://github.com/neuroscales/abczarr).
-
 ---
 
 ## Reusable workflows
