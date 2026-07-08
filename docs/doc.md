@@ -2,6 +2,8 @@
 
 Build docs with Zensical and publish them to GitHub Pages.
 
+For push-triggered deploys, use [`docs-on-push.yaml`](docs-on-push.md).
+
 ## Highlights
 
 - installs docs dependencies from `docs/requirements.txt`
