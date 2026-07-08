@@ -1,7 +1,5 @@
 name: Test package and publish
 
-description: Optionally run tests, then publish to TestPyPI/PyPI.
-
 on:
   workflow_dispatch:
     inputs:

@@ -1,7 +1,5 @@
 name: Run pytest matrix
 
-description: Reusable workflow to run pytest on Python 3.8 and latest Python.
-
 on:
   workflow_dispatch:
     inputs:

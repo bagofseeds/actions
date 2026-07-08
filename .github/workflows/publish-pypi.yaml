@@ -1,7 +1,5 @@
 name: Publish to PyPI
 
-description: Build and publish a Python package to PyPI or TestPyPI.
-
 on:
   workflow_call:
     inputs:

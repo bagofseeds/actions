@@ -1,7 +1,5 @@
 name: Build and deploy docs with zensical
 
-description: Build docs with zensical and deploy to GitHub Pages.
-
 on:
   push:
     branches:

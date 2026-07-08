@@ -1,7 +1,5 @@
 name: Run lint command
 
-description: Reusable workflow to run a custom lint command in a Python environment.
-
 on:
   workflow_dispatch:
     inputs:
@@ -81,8 +79,10 @@ jobs:
       - name: Install dispatch extra dependencies
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.pip-dependencies != '' }}
         shell: bash
+        env:
+          PIP_DEPS: ${{ inputs.pip-dependencies }}
         run: |
-          IFS=',' read -r -a dependencies <<< "${{ inputs.pip-dependencies }}"
+          IFS=',' read -r -a dependencies <<< "$PIP_DEPS"
           for dep in "${dependencies[@]}"; do
             dep="$(echo "$dep" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
             if [[ -n "$dep" ]]; then
