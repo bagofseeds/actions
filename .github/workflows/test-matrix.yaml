@@ -1,0 +1,59 @@
+name: Run pytest matrix
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+      requirements-file:
+        description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
+        required: false
+        default: ""
+      pytest-args:
+        description: Extra arguments passed to pytest
+        required: false
+        default: ""
+      working-directory:
+        description: Directory where pytest should run
+        required: false
+        default: "."
+  workflow_call:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+        type: string
+      requirements-file:
+        description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
+        required: false
+        default: ""
+        type: string
+      pytest-args:
+        description: Extra arguments passed to pytest
+        required: false
+        default: ""
+        type: string
+      working-directory:
+        description: Directory where pytest should run
+        required: false
+        default: "."
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.x"]
+    uses: ./.github/workflows/test.yaml
+    with:
+      tag: ${{ inputs.tag }}
+      python-version: ${{ matrix.python-version }}
+      requirements-file: ${{ inputs.requirements-file }}
+      pytest-args: ${{ inputs.pytest-args }}
+      working-directory: ${{ inputs.working-directory }}

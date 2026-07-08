@@ -1,0 +1,51 @@
+name: Publish to PyPI
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: Python version
+        required: false
+        default: "3.x"
+        type: string
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+        type: string
+      test:
+        description: Publish to TestPyPI instead of PyPI
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      password:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Setup Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install dependencies for building package
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade build
+      - name: Build distribution
+        shell: bash
+        run: python -m build
+      - name: Publish distribution to ${{ inputs.test && 'TestPyPI' || 'PyPI' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.password }}
+          repository-url: ${{ inputs.test && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
