@@ -1,15 +1,1 @@
-# bagofseeds/actions
-
-Reusable GitHub Actions workflows for testing, linting, docs, and publishing.
-
-## Included workflows
-
-- [`test.yaml`](test.md) — run pytest
-- [`test-matrix.yaml`](test-matrix.md) — run pytest across Python versions
-- [`lint.yaml`](lint.md) — run a configurable lint command
-- [`coverage.yaml`](coverage.md) — run pytest with coverage
-- [`docs.yaml`](docs.md) — build and deploy docs
-- [`docs-on-push.yaml`](docs-on-push.md) — trigger docs deploys on push
-- [`publish-pypi.yaml`](publish-pypi.md) — publish to PyPI or TestPyPI
-- [`test-and-publish.yaml`](test-and-publish.md) — test first, then publish
-- [`publish-on-release.yaml`](publish-on-release.md) — release-driven publish flow
+--8<-- "README.md"
