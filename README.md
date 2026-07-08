@@ -6,8 +6,9 @@
 
 ### `test.yaml` — Run pytest
 
-Runs pytest in a target repository. Automatically installs `pytest` and the
-current project (`pip install -e .`).
+Runs pytest in a target repository. Automatically installs `pytest` and, when
+present, the current project (`pip install -e .`). Missing requirements files
+are skipped with a warning.
 
 #### Inputs
 
@@ -62,6 +63,7 @@ jobs:
 ### `lint.yaml` — Run a lint command
 
 Generic lint runner with a configurable command. Default command: `ruff check .`.
+Missing requirements files are skipped with a warning.
 
 #### Inputs
 
@@ -89,7 +91,8 @@ jobs:
 
 ### `coverage.yaml` — Run pytest with coverage
 
-Runs `pytest --cov` and uploads `coverage.xml` as an artifact.
+Runs `pytest --cov` and uploads `coverage.xml` as an artifact. Missing
+requirements files are skipped with a warning.
 
 #### Inputs
 
