@@ -1,10 +1,6 @@
 name: Build and deploy docs with zensical
 
 on:
-  push:
-    branches:
-      - main
-      - master
   workflow_dispatch:
     inputs:
       tag:
@@ -66,6 +62,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      DOCS_REQUIREMENTS_FILE: ${{ inputs.docs-requirements-file || 'docs/requirements.txt' }}
     steps:
       - uses: actions/configure-pages@v5
       - uses: actions/checkout@v5
@@ -75,10 +73,10 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
       - name: Install docs dependencies
-        if: ${{ inputs.docs-requirements-file != '' }}
+        if: ${{ env.DOCS_REQUIREMENTS_FILE != '' }}
         shell: bash
         env:
-          REQUIREMENTS_FILE: ${{ inputs.docs-requirements-file }}
+          REQUIREMENTS_FILE: ${{ env.DOCS_REQUIREMENTS_FILE }}
         run: |
           if [[ -f "$REQUIREMENTS_FILE" ]]; then
             pip install -r "$REQUIREMENTS_FILE"

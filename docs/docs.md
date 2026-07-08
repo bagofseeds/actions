@@ -1,6 +1,8 @@
-# `doc.yaml`
+# `docs.yaml`
 
 Build docs with Zensical and publish them to GitHub Pages.
+
+For push-triggered deploys, use [`docs-on-push.yaml`](docs-on-push.md).
 
 ## Highlights
 
@@ -13,7 +15,7 @@ Build docs with Zensical and publish them to GitHub Pages.
 ```yaml
 jobs:
   docs:
-    uses: bagofseeds/actions/.github/workflows/doc.yaml@main
+    uses: bagofseeds/actions/.github/workflows/docs.yaml@main
     with:
       docs-requirements-file: "docs/requirements.txt"
       build-command: "zensical build --clean"
