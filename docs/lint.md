@@ -6,6 +6,7 @@ Run a configurable lint command.
 
 - defaults to `ruff check .`
 - supports custom requirements and extra pip dependencies
+- skips missing requirements files with a warning
 
 ## Example
 

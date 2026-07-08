@@ -5,8 +5,9 @@ Run pytest in a target repository.
 ## Highlights
 
 - installs `pytest`
-- installs the project with `pip install -e .`
+- installs the project with `pip install -e .` when project metadata exists
 - supports extra requirements and pytest arguments
+- skips missing requirements files with a warning
 
 ## Example
 

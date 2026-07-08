@@ -75,7 +75,14 @@ jobs:
       - name: Install from requirements file
         if: ${{ inputs.requirements-file != '' }}
         shell: bash
-        run: pip install -r "${{ inputs.requirements-file }}"
+        env:
+          REQUIREMENTS_FILE: ${{ inputs.requirements-file }}
+        run: |
+          if [[ -f "$REQUIREMENTS_FILE" ]]; then
+            pip install -r "$REQUIREMENTS_FILE"
+          else
+            echo "::warning::Requirements file '$REQUIREMENTS_FILE' was not found; skipping."
+          fi
       - name: Install dispatch extra dependencies
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.pip-dependencies != '' }}
         shell: bash
