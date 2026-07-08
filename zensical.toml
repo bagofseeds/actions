@@ -1,0 +1,47 @@
+[project]
+
+nav = [
+  {"Home" = "index.md"},
+  {"Actions" = [
+    "test.md",
+    "test-matrix.md",
+    "lint.md",
+    "coverage.md",
+    "doc.md",
+  ]},
+  {"Publishing" = [
+    "publish-pypi.md",
+    "test-and-publish.md",
+    "publish-on-release.md",
+  ]},
+]
+
+site_name = "bagofseeds/actions"
+site_description = "Reusable GitHub Actions workflows."
+site_author = "bagofseeds"
+site_url = "https://bagofseeds.github.io/actions/"
+copyright = """
+Copyright &copy; 2026 The authors
+"""
+
+[project.theme]
+language = "en"
+
+features = [
+  "content.code.copy",
+  "navigation.indexes",
+]
+
+[[project.theme.palette]]
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[project.theme.icon]
+logo = "simple-icons/githubactions"
+repo = "fontawesome/brands/github"
