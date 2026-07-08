@@ -1,0 +1,84 @@
+name: Run lint command
+
+description: Reusable workflow to run a custom lint command in a Python environment.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+      python-version:
+        description: Python version
+        required: false
+        default: "3.x"
+      pip-dependencies:
+        description: Newline-separated pip dependencies required by the lint command
+        required: false
+        default: ""
+      lint-command:
+        description: Command to execute for linting
+        required: false
+        default: "ruff check ."
+      working-directory:
+        description: Directory where lint command should run
+        required: false
+        default: "."
+  workflow_call:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+        type: string
+      python-version:
+        description: Python version
+        required: false
+        default: "3.x"
+        type: string
+      pip-dependencies:
+        description: Newline-separated pip dependencies required by the lint command
+        required: false
+        default: ""
+        type: string
+      lint-command:
+        description: Command to execute for linting
+        required: false
+        default: "ruff check ."
+        type: string
+      working-directory:
+        description: Directory where lint command should run
+        required: false
+        default: "."
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Setup Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          while IFS= read -r dependency; do
+            if [[ -n "$dependency" ]]; then
+              pip install "$dependency"
+            fi
+          done << 'EOF'
+          ${{ inputs.pip-dependencies }}
+          EOF
+      - name: Run lint
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.lint-command }}

@@ -1,0 +1,85 @@
+name: Run pytest
+
+description: Reusable workflow to run pytest on a target repository.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+      python-version:
+        description: Python version
+        required: false
+        default: "3.x"
+      pip-dependencies:
+        description: Newline-separated pip dependencies to install before pytest
+        required: false
+        default: ""
+      pytest-args:
+        description: Extra arguments passed to pytest
+        required: false
+        default: ""
+      working-directory:
+        description: Directory where pytest should run
+        required: false
+        default: "."
+  workflow_call:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+        type: string
+      python-version:
+        description: Python version
+        required: false
+        default: "3.x"
+        type: string
+      pip-dependencies:
+        description: Newline-separated pip dependencies to install before pytest
+        required: false
+        default: ""
+        type: string
+      pytest-args:
+        description: Extra arguments passed to pytest
+        required: false
+        default: ""
+        type: string
+      working-directory:
+        description: Directory where pytest should run
+        required: false
+        default: "."
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Setup Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          while IFS= read -r dependency; do
+            if [[ -n "$dependency" ]]; then
+              pip install "$dependency"
+            fi
+          done << 'EOF'
+          ${{ inputs.pip-dependencies }}
+          EOF
+      - name: Test with pytest
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: pytest ${{ inputs.pytest-args }}

@@ -1,0 +1,61 @@
+name: Run pytest matrix
+
+description: Reusable workflow to run pytest on Python 3.8 and latest Python.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+      pip-dependencies:
+        description: Newline-separated pip dependencies to install before pytest
+        required: false
+        default: ""
+      pytest-args:
+        description: Extra arguments passed to pytest
+        required: false
+        default: ""
+      working-directory:
+        description: Directory where pytest should run
+        required: false
+        default: "."
+  workflow_call:
+    inputs:
+      tag:
+        description: Commit / Branch / Tag / SHA to checkout
+        required: false
+        default: ""
+        type: string
+      pip-dependencies:
+        description: Newline-separated pip dependencies to install before pytest
+        required: false
+        default: ""
+        type: string
+      pytest-args:
+        description: Extra arguments passed to pytest
+        required: false
+        default: ""
+        type: string
+      working-directory:
+        description: Directory where pytest should run
+        required: false
+        default: "."
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.x"]
+    uses: ./.github/workflows/test.yaml
+    with:
+      tag: ${{ inputs.tag }}
+      python-version: ${{ matrix.python-version }}
+      pip-dependencies: ${{ inputs.pip-dependencies }}
+      pytest-args: ${{ inputs.pytest-args }}
+      working-directory: ${{ inputs.working-directory }}
