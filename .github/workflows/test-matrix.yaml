@@ -11,6 +11,10 @@ on:
         description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
         required: false
         default: ""
+      pip-install:
+        description: Pip dependencies to install
+        required: false
+        default: ""
       pytest-args:
         description: Extra arguments passed to pytest
         required: false
@@ -19,6 +23,7 @@ on:
         description: Directory where pytest should run
         required: false
         default: "."
+        
   workflow_call:
     inputs:
       tag:
@@ -28,6 +33,11 @@ on:
         type: string
       requirements-file:
         description: Path to requirements file to install before pytest (e.g., requirements-test.txt)
+        required: false
+        default: ""
+        type: string
+      pip-install:
+        description: Pip dependencies to install
         required: false
         default: ""
         type: string
@@ -55,5 +65,6 @@ jobs:
       tag: ${{ inputs.tag }}
       python-version: ${{ matrix.python-version }}
       requirements-file: ${{ inputs.requirements-file }}
+      pip-install: ${{ inputs.pip-install }}
       pytest-args: ${{ inputs.pytest-args }}
       working-directory: ${{ inputs.working-directory }}
