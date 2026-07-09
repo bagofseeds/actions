@@ -27,6 +27,7 @@ on:
         description: Path of generated static site to publish
         required: false
         default: "site"
+        
   workflow_call:
     inputs:
       tag:
