@@ -111,11 +111,6 @@ jobs:
         env:
           PIP_DEPS: ${{ inputs.pip-install }}
         run: |
-          if [ -z "$PIP_DEPS" ]; then
-            echo "No dependencies provided."
-            exit 0
-          fi
-
           unset args_array
           eval "args_array=($(echo "$PIP_DEPS" | xargs))"
           pip install "${args_array[@]}"
