@@ -11,10 +11,14 @@ on:
         description: Python version
         required: false
         default: "3.x"
-      docs-requirements-file:
+      requirements-file:
         description: Path to docs requirements file
         required: false
         default: "docs/requirements.txt"
+      pip-install:
+        description: Pip dependencies to install
+        required: false
+        default: ""
       build-command:
         description: Command that builds docs into the Pages artifact directory
         required: false
@@ -35,10 +39,15 @@ on:
         required: false
         default: "3.x"
         type: string
-      docs-requirements-file:
+      requirements-file:
         description: Path to docs requirements file
         required: false
         default: "docs/requirements.txt"
+        type: string
+      pip-install:
+        description: Pip dependencies to install
+        required: false
+        default: ""
         type: string
       build-command:
         description: Command that builds docs into the Pages artifact directory
@@ -58,36 +67,55 @@ permissions:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+    
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    
     env:
-      DOCS_REQUIREMENTS_FILE: ${{ inputs.docs-requirements-file || 'docs/requirements.txt' }}
+      REQUIREMENTS_FILE: ${{ inputs.requirements-file || 'docs/requirements.txt' }}
+      
     steps:
       - uses: actions/configure-pages@v5
+      
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.tag }}
+          
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
+          
       - name: Install docs dependencies
-        if: ${{ env.DOCS_REQUIREMENTS_FILE != '' }}
+        if: ${{ env.REQUIREMENTS_FILE != '' }}
         shell: bash
         env:
-          REQUIREMENTS_FILE: ${{ env.DOCS_REQUIREMENTS_FILE }}
+          REQUIREMENTS_FILE: ${{ env.REQUIREMENTS_FILE }}
         run: |
           if [[ -f "$REQUIREMENTS_FILE" ]]; then
             pip install -r "$REQUIREMENTS_FILE"
           else
             echo "::warning::Requirements file '$REQUIREMENTS_FILE' was not found; skipping."
           fi
+          
+      - name: Install extra dependencies
+        if: ${{ inputs.pip-install != '' }}
+        shell: bash
+        env:
+          PIP_DEPS: ${{ inputs.pip-install }}
+        run: |
+          unset args_array
+          eval "args_array=($(echo "$PIP_DEPS" | xargs))"
+          pip install "${args_array[@]}"
+          
       - name: Build docs
         shell: bash
         run: ${{ inputs.build-command }}
+        
       - uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ inputs.site-path }}
+          
       - uses: actions/deploy-pages@v4
         id: deployment
