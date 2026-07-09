@@ -15,8 +15,8 @@ on:
         description: Path to requirements file to install before lint command
         required: false
         default: ""
-      pip-dependencies:
-        description: Comma-separated pip dependencies to install (workflow_dispatch only)
+      pip-install:
+        description: Pip dependencies to install
         required: false
         default: ""
       lint-command:
@@ -27,6 +27,7 @@ on:
         description: Directory where lint command should run
         required: false
         default: "."
+        
   workflow_call:
     inputs:
       tag:
@@ -41,6 +42,11 @@ on:
         type: string
       requirements-file:
         description: Path to requirements file to install before lint command
+        required: false
+        default: ""
+        type: string
+      pip-install:
+        description: Pip dependencies to install
         required: false
         default: ""
         type: string
@@ -62,16 +68,20 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+    
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.tag }}
+          
       - name: Setup Python ${{ inputs.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
+          
       - name: Install base dependencies
         shell: bash
         run: python -m pip install --upgrade pip
+        
       - name: Install from requirements file
         if: ${{ inputs.requirements-file != '' }}
         shell: bash
@@ -83,19 +93,17 @@ jobs:
           else
             echo "::warning::Requirements file '$REQUIREMENTS_FILE' was not found; skipping."
           fi
-      - name: Install dispatch extra dependencies
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.pip-dependencies != '' }}
+          
+      - name: Install extra dependencies
+        if: ${{ inputs.pip-install != '' }}
         shell: bash
         env:
-          PIP_DEPS: ${{ inputs.pip-dependencies }}
+          PIP_DEPS: ${{ inputs.pip-install }}
         run: |
-          IFS=',' read -r -a dependencies <<< "$PIP_DEPS"
-          for dep in "${dependencies[@]}"; do
-            dep="$(echo "$dep" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
-            if [[ -n "$dep" ]]; then
-              pip install "$dep"
-            fi
-          done
+          unset args_array
+          eval "args_array=($(echo "$PIP_DEPS" | xargs))"
+          pip install "${args_array[@]}"
+          
       - name: Run lint
         shell: bash
         working-directory: ${{ inputs.working-directory }}
