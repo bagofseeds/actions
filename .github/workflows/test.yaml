@@ -84,17 +84,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest
           
-      - name: Install project
-        shell: bash
-        env:
-          PROJECT_DIR: ${{ inputs.working-directory }}
-        run: |
-          if [[ -f "$PROJECT_DIR/pyproject.toml" || -f "$PROJECT_DIR/setup.py" || -f "$PROJECT_DIR/setup.cfg" ]]; then
-            pip install -e "$PROJECT_DIR"
-          else
-            echo "::warning::No Python project metadata found in $PROJECT_DIR; skipping editable install."
-          fi
-          
       - name: Install from requirements file
         if: ${{ inputs.requirements-file != '' }}
         shell: bash
@@ -116,6 +105,17 @@ jobs:
           unset args_array
           eval "args_array=($(echo "$PIP_DEPS" | xargs))"
           pip install "${args_array[@]}"
+          
+      - name: Install project
+        shell: bash
+        env:
+          PROJECT_DIR: ${{ inputs.working-directory }}
+        run: |
+          if [[ -f "$PROJECT_DIR/pyproject.toml" || -f "$PROJECT_DIR/setup.py" || -f "$PROJECT_DIR/setup.cfg" ]]; then
+            pip install -e "$PROJECT_DIR"
+          else
+            echo "::warning::No Python project metadata found in $PROJECT_DIR; skipping editable install."
+          fi
           
       - name: Test with pytest
         shell: bash
