@@ -110,10 +110,22 @@ jobs:
           eval "args_array=($(echo "$PIP_DEPS" | xargs))"
           pip install "${args_array[@]}"
           
+      - name: Convert example notebooks to markdown
+        shell: bash
+        run: |
+          if compgen -G "docs/examples/*.ipynb" > /dev/null 2>&1; then
+            curl -fsSL \
+              https://raw.githubusercontent.com/bagofseeds/actions/main/scripts/nb2md.py \
+              -o /tmp/nb2md.py
+            python /tmp/nb2md.py docs/examples/*.ipynb
+          else
+            echo "No example notebooks to convert; skipping."
+          fi
+
       - name: Build docs
         shell: bash
         run: ${{ inputs.build-command }}
-        
+
       - uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ inputs.site-path }}
