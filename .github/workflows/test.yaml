@@ -27,7 +27,11 @@ on:
         description: Directory where pytest should run
         required: false
         default: "."
-        
+      os:
+        description: Runner image
+        required: false
+        default: "ubuntu-latest"
+
   workflow_call:
     inputs:
       tag:
@@ -60,13 +64,18 @@ on:
         required: false
         default: "."
         type: string
+      os:
+        description: Runner image
+        required: false
+        default: "ubuntu-latest"
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.os }}
     steps:
     
       - uses: actions/checkout@v5
