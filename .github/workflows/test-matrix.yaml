@@ -59,7 +59,12 @@ jobs:
   tests:
     strategy:
       matrix:
-        python-version: ["3.8", "3.x"]
+        # The floor, a middle version, and the newest. Testing only the
+        # two ends misses anything that behaves differently in between:
+        # on 3.9 and 3.10 `isinstance(list[str], type)` is True, which is
+        # false on either side of them, and a bug riding on that reached
+        # `main` in bagof-magic without CI ever going red.
+        python-version: ["3.8", "3.10", "3.x"]
     uses: ./.github/workflows/test.yaml
     with:
       tag: ${{ inputs.tag }}
