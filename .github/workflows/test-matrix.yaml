@@ -58,17 +58,30 @@ permissions:
 jobs:
   tests:
     strategy:
+      # One version failing must not cancel the others: each leg reports
+      # on its own.
+      fail-fast: false
       matrix:
         # The floor, a middle version, and the newest. Testing only the
         # two ends misses anything that behaves differently in between:
         # on 3.9 and 3.10 `isinstance(list[str], type)` is True, which is
         # false on either side of them, and a bug riding on that reached
         # `main` in bagof-magic without CI ever going red.
-        python-version: ["3.8", "3.10", "3.x"]
+        #
+        # 3.8 runs on ubuntu-24.04: actions/setup-python publishes no 3.8
+        # build for ubuntu-latest (26.04), only up to 24.04.
+        include:
+          - python-version: "3.8"
+            os: ubuntu-24.04
+          - python-version: "3.10"
+            os: ubuntu-latest
+          - python-version: "3.x"
+            os: ubuntu-latest
     uses: ./.github/workflows/test.yaml
     with:
       tag: ${{ inputs.tag }}
       python-version: ${{ matrix.python-version }}
+      os: ${{ matrix.os }}
       requirements-file: ${{ inputs.requirements-file }}
       pip-install: ${{ inputs.pip-install }}
       pytest-args: ${{ inputs.pytest-args }}
